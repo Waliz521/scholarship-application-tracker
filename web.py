@@ -56,6 +56,7 @@ def build_html(scholarships: list[dict] | None = None) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Scholarship Application Tracker</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -67,8 +68,8 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #f1f5f9;
+      color: #1e293b;
       padding: clamp(0.75rem, 4vw, 2rem);
       padding-left: max(clamp(0.75rem, 4vw, 2rem), env(safe-area-inset-left));
       padding-right: max(clamp(0.75rem, 4vw, 2rem), env(safe-area-inset-right));
@@ -81,7 +82,7 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       font-weight: 700;
       font-size: clamp(1.25rem, 4vw, 1.9rem);
       letter-spacing: -0.02em;
-      color: #38bdf8;
+      color: #0284c7;
       margin: 0 0 clamp(0.75rem, 3vw, 1rem) 0;
       padding-right: env(safe-area-inset-right);
     }}
@@ -92,44 +93,127 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       align-items: flex-end;
       margin-bottom: clamp(1rem, 3vw, 1.25rem);
       padding: clamp(0.75rem, 2.5vw, 1rem);
-      background: #1e293b;
+      background: #ffffff;
       border-radius: 10px;
-      border: 1px solid #334155;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }}
     .filters > div {{
       flex: 1 1 auto;
+      min-width: 0;
+    }}
+    .filter-dropdown {{
+      position: relative;
+      width: 100%;
       min-width: 0;
     }}
     .filters label {{
       display: block;
       font-weight: 600;
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       margin-bottom: 0.35rem;
     }}
-    .filters select {{
+    .filter-dropdown select {{
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
+    }}
+    .filter-dropdown__trigger {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: 100%;
       min-height: 44px;
       padding: 0.6rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #1e293b;
-      color: #e2e8f0;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
       font-family: inherit;
       font-size: 1rem;
-      min-width: 0;
-      -webkit-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.6rem center;
-      padding-right: 2rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }}
-    .filters select:focus {{ outline: none; border-color: #38bdf8; }}
+    .filter-dropdown__trigger:hover {{
+      border-color: #94a3b8;
+    }}
+    .filter-dropdown__trigger:focus {{
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    }}
+    .filter-dropdown__trigger[aria-expanded="true"] {{
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    }}
+    .filter-dropdown__trigger .filter-dropdown__arrow {{
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+      transition: transform 0.2s;
+    }}
+    .filter-dropdown__trigger[aria-expanded="true"] .filter-dropdown__arrow {{
+      transform: rotate(180deg);
+    }}
+    .filter-dropdown__list {{
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 50;
+      max-height: min(280px, 60vh);
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      padding: 6px;
+    }}
+    .filter-dropdown__list[hidden] {{
+      display: none;
+    }}
+    .filter-dropdown__option {{
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #1e293b;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s;
+    }}
+    .filter-dropdown__option:hover {{
+      background: #f1f5f9;
+    }}
+    .filter-dropdown__option[aria-selected="true"] {{
+      background: #e0f2fe;
+      color: #0284c7;
+      font-weight: 500;
+    }}
+    .filter-dropdown__list::-webkit-scrollbar {{
+      width: 6px;
+    }}
+    .filter-dropdown__list::-webkit-scrollbar-thumb {{
+      background: #cbd5e1;
+      border-radius: 3px;
+    }}
     .count {{
-      color: #94a3b8;
+      color: #64748b;
       font-size: clamp(0.8rem, 2vw, 0.85rem);
       margin-left: auto;
       flex-basis: 100%;
@@ -137,46 +221,46 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       padding-top: 0.25rem;
     }}
     .table-wrap {{
-      background: #1e293b;
+      background: #ffffff;
       border-radius: 12px;
       overflow-x: auto;
       overflow-y: visible;
       -webkit-overflow-scrolling: touch;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-      border: 1px solid #334155;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e2e8f0;
     }}
     .table-wrap::-webkit-scrollbar {{ height: 8px; }}
-    .table-wrap::-webkit-scrollbar-thumb {{ background: #475569; border-radius: 4px; }}
+    .table-wrap::-webkit-scrollbar-thumb {{ background: #cbd5e1; border-radius: 4px; }}
     table {{ width: 100%; min-width: 900px; border-collapse: collapse; font-weight: 500; table-layout: auto; }}
     th {{
       font-weight: 600;
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #38bdf8;
-      background: #0f172a;
+      color: #0284c7;
+      background: #f8fafc;
       padding: 0.75rem 0.6rem;
       text-align: left;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid #e2e8f0;
       white-space: nowrap;
     }}
-    td {{ padding: 0.7rem 0.6rem; border-bottom: 1px solid #334155; }}
+    td {{ padding: 0.7rem 0.6rem; border-bottom: 1px solid #e2e8f0; }}
     th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) {{ width: 1%; white-space: nowrap; }}
     th:nth-child(9), td:nth-child(9) {{ width: 1%; white-space: nowrap; }}
     tr:last-child td {{ border-bottom: none; }}
-    tr:hover td {{ background: #334355; }}
+    tr:hover td {{ background: #f8fafc; }}
     tr.hidden {{ display: none; }}
-    tr:nth-child(even) td {{ background: #1e293b; }}
-    tr:nth-child(even):hover td {{ background: #334355; }}
+    tr:nth-child(even) td {{ background: #f8fafc; }}
+    tr:nth-child(even):hover td {{ background: #f1f5f9; }}
     tr.rejected td {{
-      background: #7f1d1d !important;
-      color: #fecaca;
-      border-bottom-color: #991b1b;
+      background: #fef2f2 !important;
+      color: #b91c1c;
+      border-bottom-color: #fecaca;
     }}
-    tr.rejected:hover td {{ background: #991b1b !important; }}
-    a {{ color: #38bdf8; text-decoration: none; font-weight: 500; }}
-    a:hover {{ color: #7dd3fc; text-decoration: underline; }}
-    a:focus-visible {{ outline: 2px solid #38bdf8; outline-offset: 2px; }}
+    tr.rejected:hover td {{ background: #fee2e2 !important; }}
+    a {{ color: #0284c7; text-decoration: none; font-weight: 500; }}
+    a:hover {{ color: #0369a1; text-decoration: underline; }}
+    a:focus-visible {{ outline: 2px solid #0284c7; outline-offset: 2px; }}
 
     /* Tablet: tighter filters */
     @media (max-width: 900px) {{
@@ -189,7 +273,9 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       body {{ padding: 0.75rem; }}
       .filters {{ flex-direction: column; align-items: stretch; gap: 0.75rem; }}
       .filters > div {{ min-width: 0; }}
-      .filters select {{ min-height: 48px; font-size: 16px; }}
+      .filter-dropdown__trigger {{ min-height: 48px; font-size: 16px; }}
+      .filter-dropdown__option {{ padding: 0.65rem 0.75rem; min-height: 44px; }}
+      .filter-dropdown__list {{ max-height: min(260px, 50vh); }}
       .count {{ flex-basis: auto; padding-top: 0; }}
     }}
 
@@ -203,23 +289,23 @@ def build_html(scholarships: list[dict] | None = None) -> str:
         display: block;
         margin-bottom: 1rem;
         padding: 1rem;
-        background: #0f172a;
+        background: #ffffff;
         border-radius: 10px;
-        border: 1px solid #334155;
+        border: 1px solid #e2e8f0;
       }}
       .table-wrap tr:last-child {{ margin-bottom: 0; }}
       .table-wrap tr.hidden {{ display: none; }}
-      .table-wrap tr:nth-child(even) {{ background: #172033; }}
+      .table-wrap tr:nth-child(even) {{ background: #f8fafc; }}
       .table-wrap tr.rejected {{
-        background: #7f1d1d !important;
-        border-color: #991b1b;
+        background: #fef2f2 !important;
+        border-color: #fecaca;
       }}
       .table-wrap td {{
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
         padding: 0.4rem 0;
-        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
       }}
       .table-wrap td:last-child {{ border-bottom: none; }}
       .table-wrap td::before {{
@@ -228,7 +314,7 @@ def build_html(scholarships: list[dict] | None = None) -> str:
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: #38bdf8;
+        color: #0284c7;
         flex: 0 0 7rem;
         min-width: 7rem;
       }}
@@ -250,17 +336,23 @@ def build_html(scholarships: list[dict] | None = None) -> str:
   <div class="wrap">
     <h1>Scholarship Application Tracker</h1>
     <div class="filters">
-      <div>
-        <label for="filter-status">Status</label>
-        <select id="filter-status"><option value="">All</option>{status_options}</select>
+      <div class="filter-dropdown">
+        <label for="filter-status-trigger">Status</label>
+        <select id="filter-status" aria-hidden="true" tabindex="-1"><option value="">All</option>{status_options}</select>
+        <button type="button" id="filter-status-trigger" class="filter-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false"><span class="filter-dropdown__label">All</span><span class="filter-dropdown__arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11L3 6h10l-5 5z"/></svg></span></button>
+        <div id="filter-status-list" class="filter-dropdown__list" role="listbox" hidden></div>
       </div>
-      <div>
-        <label for="filter-country">Country</label>
-        <select id="filter-country"><option value="">All</option>{country_options}</select>
+      <div class="filter-dropdown">
+        <label for="filter-country-trigger">Country</label>
+        <select id="filter-country" aria-hidden="true" tabindex="-1"><option value="">All</option>{country_options}</select>
+        <button type="button" id="filter-country-trigger" class="filter-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false"><span class="filter-dropdown__label">All</span><span class="filter-dropdown__arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11L3 6h10l-5 5z"/></svg></span></button>
+        <div id="filter-country-list" class="filter-dropdown__list" role="listbox" hidden></div>
       </div>
-      <div>
-        <label for="filter-entry">Point of Entry</label>
-        <select id="filter-entry"><option value="">All</option>{entry_options}</select>
+      <div class="filter-dropdown">
+        <label for="filter-entry-trigger">Point of Entry</label>
+        <select id="filter-entry" aria-hidden="true" tabindex="-1"><option value="">All</option>{entry_options}</select>
+        <button type="button" id="filter-entry-trigger" class="filter-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false"><span class="filter-dropdown__label">All</span><span class="filter-dropdown__arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11L3 6h10l-5 5z"/></svg></span></button>
+        <div id="filter-entry-list" class="filter-dropdown__list" role="listbox" hidden></div>
       </div>
       <span class="count" id="visible-count"></span>
     </div>
@@ -283,6 +375,74 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       var countrySel = document.getElementById('filter-country');
       var entrySel = document.getElementById('filter-entry');
       var countEl = document.getElementById('visible-count');
+
+      var dropdowns = [
+        {{ sel: statusSel, trigger: document.getElementById('filter-status-trigger'), list: document.getElementById('filter-status-list') }},
+        {{ sel: countrySel, trigger: document.getElementById('filter-country-trigger'), list: document.getElementById('filter-country-list') }},
+        {{ sel: entrySel, trigger: document.getElementById('filter-entry-trigger'), list: document.getElementById('filter-entry-list') }}
+      ];
+
+      function setTriggerText(d) {{
+        if (!d || !d.sel || !d.trigger) return;
+        var opt = d.sel.options[d.sel.selectedIndex];
+        var label = d.trigger.querySelector('.filter-dropdown__label');
+        if (label) label.textContent = opt ? opt.text : 'All';
+      }}
+
+      function closeAll() {{
+        dropdowns.forEach(function(d) {{
+          if (d.trigger) d.trigger.setAttribute('aria-expanded', 'false');
+          if (d.list) d.list.setAttribute('hidden', '');
+        }});
+      }}
+
+      function buildList(d) {{
+        if (!d.sel || !d.list) return;
+        d.list.innerHTML = '';
+        for (var i = 0; i < d.sel.options.length; i++) {{
+          var opt = d.sel.options[i];
+          var item = document.createElement('div');
+          item.setAttribute('role', 'option');
+          item.setAttribute('aria-selected', d.sel.value === opt.value ? 'true' : 'false');
+          item.setAttribute('data-value', opt.value);
+          item.className = 'filter-dropdown__option';
+          item.textContent = opt.text || 'All';
+          (function(sel, listEl, val) {{
+            item.addEventListener('click', function() {{
+              sel.value = val;
+              sel.dispatchEvent(new Event('change', {{ bubbles: true }}));
+              setTriggerText(d);
+              closeAll();
+            }});
+          }})(d.sel, d.list, opt.value);
+          d.list.appendChild(item);
+        }}
+      }}
+
+      dropdowns.forEach(function(d) {{
+        buildList(d);
+        setTriggerText(d);
+        if (d.trigger && d.list) {{
+          d.trigger.addEventListener('click', function(e) {{
+            e.preventDefault();
+            var open = d.trigger.getAttribute('aria-expanded') === 'true';
+            closeAll();
+            if (!open) {{
+              d.trigger.setAttribute('aria-expanded', 'true');
+              d.list.removeAttribute('hidden');
+              buildList(d);
+              var opts = d.list.querySelectorAll('.filter-dropdown__option');
+              for (var j = 0; j < opts.length; j++) {{
+                opts[j].setAttribute('aria-selected', d.sel.value === opts[j].getAttribute('data-value') ? 'true' : 'false');
+              }}
+            }}
+          }});
+        }}
+      }});
+
+      document.addEventListener('click', function(e) {{
+        if (!e.target.closest('.filter-dropdown')) closeAll();
+      }});
 
       function update() {{
         var status = (statusSel && statusSel.value) || '';

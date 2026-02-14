@@ -1,18 +1,37 @@
-"""Run the Scholarship Application Tracker locally. Open http://localhost:8000"""
+"""Run the Scholarship Application Tracker locally. Open http://localhost:8000
+
+For development with auto-restart on file changes, run:  python serve_dev.py
+"""
 
 import http.server
 import os
 import socketserver
 import webbrowser
+from pathlib import Path
 
 from web import build_html
 
 PORT = int(os.environ.get("PORT", 8000))
+_ROOT = Path(__file__).resolve().parent
+FAVICON_FILE = "favicon.png"
 
 
 class _Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path not in ("/", "/index.html"):
+        path = self.path.split("?")[0]
+        if path in ("/favicon.png", "/favicon.ico"):
+            favicon = _ROOT / FAVICON_FILE
+            if favicon.exists():
+                body = favicon.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            self.send_error(404)
+            return
+        if path not in ("/", "/index.html"):
             self.send_error(404)
             return
         html = build_html()
