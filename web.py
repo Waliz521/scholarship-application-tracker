@@ -43,9 +43,10 @@ def build_html(scholarships: list[dict] | None = None) -> str:
 
     body = "\n".join(rows) if rows else '<tr><td colspan="9">No scholarships yet. Share the sheet as &quot;Anyone with the link can view&quot;.</td></tr>'
 
-    status_options = "".join(f'<option value="{_esc(x)}">{_esc(x) or "—"}</option>' for x in ["", *statuses])
-    country_options = "".join(f'<option value="{_esc(x)}">{_esc(x) or "—"}</option>' for x in ["", *countries])
-    entry_options = "".join(f'<option value="{_esc(x)}">{_esc(x) or "—"}</option>' for x in ["", *entries])
+    # Only non-empty values in filters; "All" is in the template, no dash option
+    status_options = "".join(f'<option value="{_esc(x)}">{_esc(x)}</option>' for x in statuses)
+    country_options = "".join(f'<option value="{_esc(x)}">{_esc(x)}</option>' for x in countries)
+    entry_options = "".join(f'<option value="{_esc(x)}">{_esc(x)}</option>' for x in entries)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -62,8 +63,8 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       font-family: 'DM Sans', system-ui, sans-serif;
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(160deg, #0c1445 0%, #1a237e 35%, #283593 100%);
-      color: #e8eaf6;
+      background: #0f172a;
+      color: #e2e8f0;
       padding: clamp(0.75rem, 4vw, 2rem);
       font-size: clamp(14px, 2vw, 15px);
       line-height: 1.5;
@@ -73,9 +74,8 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       font-weight: 700;
       font-size: clamp(1.4rem, 4vw, 1.9rem);
       letter-spacing: -0.02em;
-      color: #ffc107;
+      color: #38bdf8;
       margin: 0 0 1rem 0;
-      text-shadow: 0 0 32px rgba(255, 193, 7, 0.35);
     }}
     .filters {{
       display: flex;
@@ -84,64 +84,66 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       align-items: center;
       margin-bottom: 1.25rem;
       padding: 0.85rem 1rem;
-      background: rgba(13, 20, 70, 0.6);
+      background: #1e293b;
       border-radius: 10px;
-      border: 1px solid rgba(255, 193, 7, 0.15);
+      border: 1px solid #334155;
     }}
     .filters label {{
       font-weight: 600;
       font-size: 0.8rem;
-      color: #ffc107;
+      color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }}
     .filters select {{
       padding: 0.45rem 0.65rem;
       border-radius: 6px;
-      border: 1px solid rgba(255, 193, 7, 0.3);
-      background: rgba(13, 20, 70, 0.9);
-      color: #e8eaf6;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #e2e8f0;
       font-family: inherit;
       font-size: 0.9rem;
       min-width: 140px;
     }}
-    .filters select:focus {{ outline: none; border-color: #ffc107; }}
+    .filters select:focus {{ outline: none; border-color: #38bdf8; }}
     .table-wrap {{
-      background: rgba(13, 20, 70, 0.5);
+      background: #1e293b;
       border-radius: 12px;
       overflow-x: auto;
+      overflow-y: visible;
       -webkit-overflow-scrolling: touch;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 193, 7, 0.12);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      border: 1px solid #334155;
     }}
-    table {{ width: 100%; min-width: 900px; border-collapse: collapse; font-weight: 500; }}
+    table {{ width: 100%; min-width: 900px; border-collapse: collapse; font-weight: 500; table-layout: auto; }}
     th {{
       font-weight: 600;
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #ffc107;
-      background: rgba(13, 20, 70, 0.95);
+      color: #38bdf8;
+      background: #0f172a;
       padding: 0.75rem 0.6rem;
       text-align: left;
-      border-bottom: 1px solid rgba(255, 193, 7, 0.25);
+      border-bottom: 1px solid #334155;
       white-space: nowrap;
     }}
-    td {{ padding: 0.7rem 0.6rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }}
+    td {{ padding: 0.7rem 0.6rem; border-bottom: 1px solid #334155; }}
     td:nth-child(4), td:nth-child(5), td:nth-child(9) {{ white-space: nowrap; }}
     tr:last-child td {{ border-bottom: none; }}
-    tr:hover td {{ background: rgba(255, 193, 7, 0.06); }}
+    tr:hover td {{ background: #334155; }}
     tr.hidden {{ display: none; }}
-    tr:nth-child(even) td {{ background: rgba(0, 0, 0, 0.12); }}
-    tr:nth-child(even):hover td {{ background: rgba(255, 193, 7, 0.08); }}
+    tr:nth-child(even) td {{ background: #1e293b; }}
+    tr:nth-child(even):hover td {{ background: #334155; }}
     tr.rejected td {{
-      background: rgba(180, 60, 60, 0.22) !important;
-      color: rgba(255, 220, 220, 0.95);
+      background: #7f1d1d !important;
+      color: #fecaca;
+      border-bottom-color: #991b1b;
     }}
-    tr.rejected:hover td {{ background: rgba(180, 60, 60, 0.32) !important; }}
-    a {{ color: #81d4fa; text-decoration: none; font-weight: 500; }}
-    a:hover {{ color: #b3e5fc; text-decoration: underline; }}
-    .count {{ color: #9fa8da; font-size: 0.85rem; margin-left: auto; }}
+    tr.rejected:hover td {{ background: #991b1b !important; }}
+    a {{ color: #38bdf8; text-decoration: none; font-weight: 500; }}
+    a:hover {{ color: #7dd3fc; text-decoration: underline; }}
+    .count {{ color: #94a3b8; font-size: 0.85rem; margin-left: auto; }}
     @media (max-width: 768px) {{
       body {{ padding: 0.75rem; }}
       .filters {{ flex-direction: column; align-items: stretch; }}
