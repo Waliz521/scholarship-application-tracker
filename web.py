@@ -13,6 +13,24 @@ def _unique_sorted(values: set[str]) -> list[str]:
     return sorted((v for v in values if v), key=str.lower)
 
 
+def _status_to_row_class(status: str) -> str:
+    """Map application status to a CSS class. Statuses: Accepted, Admissions Review, Application Submitted, Rejected, In Progress."""
+    s = (status or "").strip().lower()
+    if not s:
+        return ""
+    if "rejected" in s:
+        return "rejected"
+    if "accepted" in s:
+        return "status-accepted"
+    if "in progress" in s:
+        return "status-pending"
+    if "admissions review" in s or "admission review" in s:
+        return "status-admissions-review"
+    if "application submitted" in s or "submitted" in s:
+        return "status-applied"
+    return ""
+
+
 def build_html(scholarships: list[dict] | None = None) -> str:
     if scholarships is None:
         scholarships = load_scholarships(use_local_fallback=True)
@@ -33,8 +51,8 @@ def build_html(scholarships: list[dict] | None = None) -> str:
         country = _esc(s.get("country"))
         link = (s.get("link") or "").strip()
         link_cell = f'<a href="{_esc(link)}" target="_blank" rel="noopener">Link</a>' if link else "—"
-        is_rejected = status.lower() == "rejected"
-        row_class = ' class="rejected"' if is_rejected else ""
+        status_class = _status_to_row_class(s.get("application_status") or "")
+        row_class = f' class="{status_class}"' if status_class else ""
         data_attr = f' data-status="{_esc(status)}" data-country="{_esc(country)}" data-entry="{_esc(entry)}"'
         rows.append(
             f'<tr{row_class}{data_attr}>'
@@ -258,6 +276,30 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       border-bottom-color: #fecaca;
     }}
     tr.rejected:hover td {{ background: #fee2e2 !important; }}
+    tr.status-accepted td {{
+      background: #f0fdf4 !important;
+      color: #166534;
+      border-bottom-color: #bbf7d0;
+    }}
+    tr.status-accepted:hover td {{ background: #dcfce7 !important; }}
+    tr.status-pending td {{
+      background: #fffbeb !important;
+      color: #b45309;
+      border-bottom-color: #fde68a;
+    }}
+    tr.status-pending:hover td {{ background: #fef3c7 !important; }}
+    tr.status-admissions-review td {{
+      background: #f5f3ff !important;
+      color: #5b21b6;
+      border-bottom-color: #ddd6fe;
+    }}
+    tr.status-admissions-review:hover td {{ background: #ede9fe !important; }}
+    tr.status-applied td {{
+      background: #eff6ff !important;
+      color: #1e40af;
+      border-bottom-color: #bfdbfe;
+    }}
+    tr.status-applied:hover td {{ background: #dbeafe !important; }}
     a {{ color: #0284c7; text-decoration: none; font-weight: 500; }}
     a:hover {{ color: #0369a1; text-decoration: underline; }}
     a:focus-visible {{ outline: 2px solid #0284c7; outline-offset: 2px; }}
@@ -299,6 +341,22 @@ def build_html(scholarships: list[dict] | None = None) -> str:
       .table-wrap tr.rejected {{
         background: #fef2f2 !important;
         border-color: #fecaca;
+      }}
+      .table-wrap tr.status-accepted {{
+        background: #f0fdf4 !important;
+        border-color: #bbf7d0;
+      }}
+      .table-wrap tr.status-pending {{
+        background: #fffbeb !important;
+        border-color: #fde68a;
+      }}
+      .table-wrap tr.status-admissions-review {{
+        background: #f5f3ff !important;
+        border-color: #ddd6fe;
+      }}
+      .table-wrap tr.status-applied {{
+        background: #eff6ff !important;
+        border-color: #bfdbfe;
       }}
       .table-wrap td {{
         display: flex;
